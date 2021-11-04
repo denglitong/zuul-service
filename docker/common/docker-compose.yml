@@ -1,0 +1,84 @@
+version: '2'
+services:
+  database:
+    image: postgres:14.0
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "p0stgr@s"
+      POSTGRES_DB: "eagle_eye_local"
+  eurekaservice:
+    image: denglitong/eureka-service:chapter4
+    ports:
+      - "8761:8761"
+  configurationservice:
+    image: denglitong/configuration-service:chapter3
+    ports:
+      - "8888:8888"
+    environment:
+      ENCRYPT_KEY: "IMSYMMETRIC"
+  organizationservice:
+    image: denglitong/organization-service:chapter4
+    ports:
+      - "8085:8085"
+    environment:
+      PROFILE: "default"
+      SERVER_PORT: "8085"
+      EUREKASERVER_URI: "http://eurekaservice:8761/eureka/"
+      CONFIGSERVER_URI: "http://configurationservice:8888"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8888"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+  organizationservicenew:
+    image: denglitong/organization-service-new:chapter6
+    ports:
+      - "8087:8087"
+    environment:
+      PROFILE: "default"
+      SERVER_PORT: "8087"
+      EUREKASERVER_URI: "http://eurekaservice:8761/eureka/"
+      CONFIGSERVER_URI: "http://configurationservice:8888"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8888"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+  licensingservice:
+    image: denglitong/licensing-service:chapter2
+    ports:
+      - "8080:8080"
+    environment:
+      PROFILE: "default"
+      EUREKASERVER_URI: "http://eurekaservice:8761/eureka/"
+      CONFIGSERVER_URI: "http://configurationservice:8888"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8888"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+  zuulservice:
+    image: denglitong/zuul-service:chapter6
+    ports:
+      - "5555:5555"
+    environment:
+      PROFILE: "default"
+      EUREKASERVER_URI: "http://eurekaservice:8761/eureka/"
+      CONFIGSERVER_URI: "http://configurationservice:8888"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8888"
+      DATABASESERVER_PORT: "5432"
+      SERVER_PORT: "5555"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+  specialroutesservice:
+    image: denglitong/specialroutes-service:chapter6
+    ports:
+      - "8910:8910"
+    environment:
+      PROFILE: "default"
+      SERVER_PORT: "8910"
+      CONFIGSERVER_URI: "http://configurationservice:8888"
+      EUREKASERVER_URI: "http://eurekaservice:8761/eureka/"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8888"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"

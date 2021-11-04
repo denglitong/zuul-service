@@ -1,0 +1,56 @@
+spring:
+  application:
+    # 应用程序的名称必须直接映射到Spring Cloud配置服务器中的config目录的名称
+    name: zuulservice
+  profiles:
+    active: default
+  config:
+    # 指定Spring Cloud Config服务器的位置
+    import: "optional:configserver:http://configurationservice:8888"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    # 开放/actuator/routes端点
+    routes:
+      enabled: true
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+zuul:
+  # 排除基于Eureka的指定服务ID的路由
+  #  ignored-services: "organizationservice"
+  prefix: /api
+  routes:
+    # ① 手动映射路由
+    organizationservice: /organization/**
+
+    # ② Eureka服务发现自动映射的路由：
+    # organizationservice: /organizationservice/**
+
+    # ③ 手动映射路由，可配置那些不受Eureka管理的服务，服务实例将被直接调用url，而不是由Zuul通过Eureka调用
+    licensestatic:
+      path: /licensestatic/**
+      # url: http://licenseservice-static:8081
+      # 定义一个服务ID，该服务ID将用于在Ribbon中查找服务
+      serviceId: licensestatic
+server:
+  port: 5555
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+#ribbon:
+#  eureka:
+#    enabled: false
+licensestatic:
+  ribbon:
+    listOfServers:
+      http://licenseservice-static1:8081,http://licenseservice-static2:8082
